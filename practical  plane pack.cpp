@@ -1,0 +1,94 @@
+//a complicated plane
+int plane(int y)
+{
+	for(int j=0;j<y;j++)
+		{
+			printf(" ");
+		}
+		printf("  *\n");
+		for(int j=0;j<y;j++)
+		{
+			printf(" ");
+		}
+		printf("*****\n");
+		for(int j=0;j<y;j++)
+		{
+			printf(" ");
+		}
+		printf(" * * \n");
+}
+//moving plane
+void move(int *x,int *y,char input)
+{
+		if(kbhit())
+		{
+			input=getch();
+			if(input=='a')
+			{
+				(*y)--;
+			}
+			if(input=='d')
+			{
+				(*y)++;
+			}
+			if(input=='s')
+			{
+				(*x)++;
+			}
+			if(input=='w')
+			{
+				(*x)--;
+			}
+		}
+}
+//moving plane with laser
+void move(int *x,int *y,char input,int *fire)
+{
+		if(kbhit())
+		{
+			input=getch();
+			if(input=='a')
+			{
+				(*y)--;
+			}
+			if(input=='d')
+			{
+				(*y)++;
+			}
+			if(input=='s')
+			{
+				(*x)++;
+			}
+			if(input=='w')
+			{
+				(*x)--;
+			}
+			if(input==' ')
+			{
+				(*fire)=1;
+			}
+		}
+}
+//creating laser
+int laser(int *fire,int *x,int *y)
+{
+	if((*fire)==0)
+		{
+			for(int i=0;i<(*x);i++)
+			{
+				printf("\n");
+			}
+		}
+		else
+		{
+			for(int i=0;i<(*x);i++)
+			{
+				for(int j=0;j<(*y);j++)
+				{
+					printf(" ");
+				}
+				printf("  |\n");
+			}
+			fire=0;
+		}
+}

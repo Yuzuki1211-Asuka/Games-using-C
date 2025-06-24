@@ -16,42 +16,40 @@ void gotoxy(int x, int y) {
     SetConsoleCursorPosition(handle, pos);
 }
 
-// Íæ¼Ò1±äÁ¿
-int px1, py1;      // Íæ¼Ò1Î»ÖÃ
-int bx1, by1;      // Íæ¼Ò1×Óµ¯Î»ÖÃ
-int bs1_active;     // Íæ¼Ò1×Óµ¯¼¤»î×´Ì¬
+int px1, py1;     
+int bx1, by1;      
+int bs1_active;     
 
-// Íæ¼Ò2±äÁ¿
-int px2, py2;      // Íæ¼Ò2Î»ÖÃ
-int bx2, by2;      // Íæ¼Ò2×Óµ¯Î»ÖÃ
-int bs2_active;     // Íæ¼Ò2×Óµ¯¼¤»î×´Ì¬
+int px2, py2;
+int bx2, by2;
+int bs2_active;
 
-// ¹«¹²±äÁ¿
-int h, w;           // ÓÎÏ·ÇøÓò³ß´ç
-int ex, ey;         // µĞ»úÎ»ÖÃ
-int score = 0;      // ¹²Ïí·ÖÊı
-int bs_speed;       // ×Óµ¯ËÙ¶È
-int over;           // ÓÎÏ·½áÊø±êÖ¾
+// å…¬å…±å˜é‡
+int h, w;           // æ¸¸æˆåŒºåŸŸå°ºå¯¸
+int ex, ey;         // æ•Œæœºä½ç½®
+int score = 0;      // å…±äº«åˆ†æ•°
+int bs_speed;       // å­å¼¹é€Ÿåº¦
+int over;           // æ¸¸æˆç»“æŸæ ‡å¿—
 
 void startup() {
     h = 20;
     w = 30;
     
-    // ³õÊ¼»¯Íæ¼Ò1£¨×óÏÂ½Ç£©
+    // åˆå§‹åŒ–ç©å®¶1ï¼ˆå·¦ä¸‹è§’ï¼‰
     px1 = h - 3;
     py1 = w / 4;
     bx1 = -1;
     by1 = py1;
     bs1_active = 0;
     
-    // ³õÊ¼»¯Íæ¼Ò2£¨ÓÒÏÂ½Ç£©
+    // åˆå§‹åŒ–ç©å®¶2ï¼ˆå³ä¸‹è§’ï¼‰
     px2 = h - 3;
     py2 = 3 * w / 4;
     bx2 = -1;
     by2 = py2;
     bs2_active = 0;
     
-    // ³õÊ¼»¯µĞ»ú£¨¶¥²¿¾ÓÖĞ£©
+    // åˆå§‹åŒ–æ•Œæœºï¼ˆé¡¶éƒ¨å±…ä¸­ï¼‰
     ex = 0;
     ey = w / 2;
     
@@ -65,7 +63,7 @@ void show() {
         for (int j = 0; j < w; j++) {
             int printed = 0;
             
-            // »æÖÆÍæ¼Ò1·É»ú
+            // ç»˜åˆ¶ç©å®¶1é£æœº
             if (i == px1 && j == py1 - 2) {
                 printf("  *  ");
                 j += 4;
@@ -79,7 +77,7 @@ void show() {
                 j += 3;
                 printed = 1;
             }
-            // »æÖÆÍæ¼Ò2·É»ú
+            // ç»˜åˆ¶ç©å®¶2é£æœº
             else if (i == px2 && j == py2 - 2) {
                 printf("  +  ");
                 j += 4;
@@ -93,17 +91,17 @@ void show() {
                 j += 3;
                 printed = 1;
             }
-            // »æÖÆµĞ»ú
+            // ç»˜åˆ¶æ•Œæœº
             else if ((i == ex) && (j == ey)) {
                 printf("@");
                 printed = 1;
             }
-            // »æÖÆÍæ¼Ò1×Óµ¯
+            // ç»˜åˆ¶ç©å®¶1å­å¼¹
             else if ((i == bx1) && (j == by1) && bs1_active) {
                 printf("|");
                 printed = 1;
             }
-            // »æÖÆÍæ¼Ò2×Óµ¯
+            // ç»˜åˆ¶ç©å®¶2å­å¼¹
             else if ((i == bx2) && (j == by2) && bs2_active) {
                 printf("!");
                 printed = 1;
@@ -118,13 +116,13 @@ void show() {
 }
 
 void updatenoinput() {
-    // ¸üĞÂÍæ¼Ò1×Óµ¯
+    // æ›´æ–°ç©å®¶1å­å¼¹
     if (bs1_active) {
         bx1 -= bs_speed;
         if (bx1 < 0) {
             bs1_active = 0;
         }
-        // ¼ì²âÍæ¼Ò1×Óµ¯»÷ÖĞµĞ»ú
+        // æ£€æµ‹ç©å®¶1å­å¼¹å‡»ä¸­æ•Œæœº
         if ((bx1 <= ex && ex <= bx1 + bs_speed) && (by1 == ey)) {
             score++;
             ex = -1;
@@ -135,13 +133,13 @@ void updatenoinput() {
         }
     }
     
-    // ¸üĞÂÍæ¼Ò2×Óµ¯
+    // æ›´æ–°ç©å®¶2å­å¼¹
     if (bs2_active) {
         bx2 -= bs_speed;
         if (bx2 < 0) {
             bs2_active = 0;
         }
-        // ¼ì²âÍæ¼Ò2×Óµ¯»÷ÖĞµĞ»ú
+        // æ£€æµ‹ç©å®¶2å­å¼¹å‡»ä¸­æ•Œæœº
         if ((bx2 <= ex && ex <= bx2 + bs_speed) && (by2 == ey)) {
             score++;
             ex = -1;
@@ -152,7 +150,7 @@ void updatenoinput() {
         }
     }
     
-    // µĞ»úÂß¼­
+    // æ•Œæœºé€»è¾‘
     if (ex > h) {
         ex = -1;
         ey = rand() % w;
@@ -167,7 +165,7 @@ void updatenoinput() {
         ve = 0;
     }
     
-    // ³õÊ¼»¯ĞÂµĞ»ú
+    // åˆå§‹åŒ–æ–°æ•Œæœº
     if (ex == -1) {
         ex = 0;
         ey = rand() % w;
@@ -178,7 +176,7 @@ void updateinput() {
     if (_kbhit()) {
         char input = _getch();
         
-        // Íæ¼Ò1¿ØÖÆ (WASD + ¿Õ¸ñ)
+        // ç©å®¶1æ§åˆ¶ (WASD + ç©ºæ ¼)
         if (input == 'a' && py1 > 2) py1--;
         if (input == 'd' && py1 < w - 3) py1++;
         if (input == 's' && px1 < h - 3) px1++;
@@ -189,18 +187,18 @@ void updateinput() {
             bs1_active = 1;
         }
         
-        // Íæ¼Ò2¿ØÖÆ (·½Ïò¼ü + Enter)
-        if (input == 75 && py2 > 2) py2--;       // ×ó¼ıÍ·
-        if (input == 77 && py2 < w - 3) py2++;   // ÓÒ¼ıÍ·
-        if (input == 80 && px2 < h - 3) px2++;   // ÏÂ¼ıÍ·
-        if (input == 72 && px2 > 0) px2--;       // ÉÏ¼ıÍ·
-        if (input == 13 && !bs2_active) {        // Enter¼ü
+        // ç©å®¶2æ§åˆ¶ (æ–¹å‘é”® + Enter)
+        if (input == 75 && py2 > 2) py2--;       // å·¦ç®­å¤´
+        if (input == 77 && py2 < w - 3) py2++;   // å³ç®­å¤´
+        if (input == 80 && px2 < h - 3) px2++;   // ä¸‹ç®­å¤´
+        if (input == 72 && px2 > 0) px2--;       // ä¸Šç®­å¤´
+        if (input == 13 && !bs2_active) {        // Enteré”®
             bx2 = px2 - 1;
             by2 = py2;
             bs2_active = 1;
         }
         
-        // ÍË³öÓÎÏ· (ESC)
+        // é€€å‡ºæ¸¸æˆ (ESC)
         if (input == 27) over = 1;
     }
 }
@@ -221,7 +219,7 @@ int main() {
         updatenoinput();
         updateinput();
         displayScore(score);
-        Sleep(50); // ¿ØÖÆÓÎÏ·ËÙ¶È
+        Sleep(50); // æ§åˆ¶æ¸¸æˆé€Ÿåº¦
     }
     
     system("cls");

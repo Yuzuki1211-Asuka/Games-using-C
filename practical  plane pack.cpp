@@ -92,3 +92,17 @@ int laser(int *fire,int *x,int *y)
 			fire=0;
 		}
 }
+//controlling cursor
+void HideCursor()//hiding cursor
+{
+	CONSOLE_CURSOR_INFO cursor_info={1,0};
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&cursor_info);
+}
+void gotoxy(int x,int y)//eliminating flashing
+{
+	HANDLE handle=GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD pos;
+	pos.X=x;
+	pos.Y=y;
+	SetConsoleCursorPosition(handle,pos);
+}

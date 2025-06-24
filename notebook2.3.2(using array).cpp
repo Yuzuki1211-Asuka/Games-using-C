@@ -6,46 +6,46 @@
 
 #define H 20
 #define W 30
-#define MAX_BULLETS 10      // Ôö¼Ó×Óµ¯ÊıÁ¿ÒÔÖ§³ÖÉ¢µ¯
-#define MAX_ENEMIES 5       // ×î´óµĞ»úÊıÁ¿
-#define ENEMY_SPAWN_RATE 30 // µĞ»úÉú³ÉÆµÂÊ
-#define MAX_SHOT_WIDTH 5    // ×î´ó×Óµ¯¿í¶È
-// Òş²Ø¹â±ê
+#define MAX_BULLETS 10      // å¢åŠ å­å¼¹æ•°é‡ä»¥æ”¯æŒæ•£å¼¹
+#define MAX_ENEMIES 5       // æœ€å¤§æ•Œæœºæ•°é‡
+#define ENEMY_SPAWN_RATE 30 // æ•Œæœºç”Ÿæˆé¢‘ç‡
+#define MAX_SHOT_WIDTH 5    // æœ€å¤§å­å¼¹å®½åº¦
+// éšè—å…‰æ ‡
 void HideCursor() {
     CONSOLE_CURSOR_INFO cursor_info = {1, 0};
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
-// ÒÆ¶¯¹â±êµ½Ö¸¶¨Î»ÖÃ
+// ç§»åŠ¨å…‰æ ‡åˆ°æŒ‡å®šä½ç½®
 void gotoxy(int x, int y) {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD pos = {(SHORT)x, (SHORT)y};
     SetConsoleCursorPosition(handle, pos);
 }
-// ×Óµ¯½á¹¹Ìå
+// å­å¼¹ç»“æ„ä½“
 typedef struct {
     int x, y;
     int active;
 } Bullet;
-// µĞ»ú½á¹¹Ìå
+// æ•Œæœºç»“æ„ä½“
 typedef struct {
     int x, y;
     int active;
-    int speed; // Ã¿¼ÜµĞ»úÓĞ×Ô¼ºµÄËÙ¶È
+    int speed; // æ¯æ¶æ•Œæœºæœ‰è‡ªå·±çš„é€Ÿåº¦
 } Enemy;
-// ÓÎÏ·×´Ì¬±äÁ¿
-int px, py;         // Íæ¼ÒÎ»ÖÃ
-Bullet bullets[MAX_BULLETS]; // ×Óµ¯Êı×é
-Enemy enemies[MAX_ENEMIES];  // µĞ»úÊı×é
-int score = 0;      // µÃ·Ö
-int over = 0;       // ÓÎÏ·½áÊø±êÖ¾
-int lives = 3;      // Íæ¼ÒÉúÃüÖµ
-int spawn_timer = 0; // µĞ»úÉú³É¼ÆÊ±Æ÷
-int shot_width = 1; // µ±Ç°×Óµ¯¿í¶È
-int shot_level = 0; // ×Óµ¯µÈ¼¶
-int enemy_base_speed = 1; // µĞ»ú»ù´¡ËÙ¶È
-// ÓÎÏ·»­ÃæÊı×é
+// æ¸¸æˆçŠ¶æ€å˜é‡
+int px, py;         // ç©å®¶ä½ç½®
+Bullet bullets[MAX_BULLETS]; // å­å¼¹æ•°ç»„
+Enemy enemies[MAX_ENEMIES];  // æ•Œæœºæ•°ç»„
+int score = 0;      // å¾—åˆ†
+int over = 0;       // æ¸¸æˆç»“æŸæ ‡å¿—
+int lives = 3;      // ç©å®¶ç”Ÿå‘½å€¼
+int spawn_timer = 0; // æ•Œæœºç”Ÿæˆè®¡æ—¶å™¨
+int shot_width = 1; // å½“å‰å­å¼¹å®½åº¦
+int shot_level = 0; // å­å¼¹ç­‰çº§
+int enemy_base_speed = 1; // æ•ŒæœºåŸºç¡€é€Ÿåº¦
+// æ¸¸æˆç”»é¢æ•°ç»„
 char map[H][W];
-// ³õÊ¼»¯ÓÎÏ·
+// åˆå§‹åŒ–æ¸¸æˆ
 void startup() {
     px = H - 3;
     py = W / 2;
@@ -54,25 +54,25 @@ void startup() {
     shot_level = 0;
     enemy_base_speed = 1;
     
-    // ³õÊ¼»¯ËùÓĞ×Óµ¯ÎªÎ´¼¤»î×´Ì¬
+    // åˆå§‹åŒ–æ‰€æœ‰å­å¼¹ä¸ºæœªæ¿€æ´»çŠ¶æ€
     for (int i = 0; i < MAX_BULLETS; i++) {
         bullets[i].active = 0;
     }
     
-    // ³õÊ¼»¯ËùÓĞµĞ»úÎªÎ´¼¤»î×´Ì¬
+    // åˆå§‹åŒ–æ‰€æœ‰æ•Œæœºä¸ºæœªæ¿€æ´»çŠ¶æ€
     for (int i = 0; i < MAX_ENEMIES; i++) {
         enemies[i].active = 0;
     }
 }
 
-// Çå¿ÕÓÎÏ·»­Ãæ
+// æ¸…ç©ºæ¸¸æˆç”»é¢
 void clearMap() {
     for (int i = 0; i < H; i++) {
         for (int j = 0; j < W; j++) {
             if (i == 0 || i == H - 1) {
-                map[i][j] = '-'; // ÉÏÏÂ±ß½ç
+                map[i][j] = '-'; // ä¸Šä¸‹è¾¹ç•Œ
             } else if (j == 0 || j == W - 1) {
-                map[i][j] = '|'; // ×óÓÒ±ß½ç
+                map[i][j] = '|'; // å·¦å³è¾¹ç•Œ
             } else {
                 map[i][j] = ' ';
             }
@@ -80,17 +80,17 @@ void clearMap() {
     }
 }
 
-// »æÖÆÍæ¼Ò·É»ú
+// ç»˜åˆ¶ç©å®¶é£æœº
 void drawPlayer() {
-    // È·±£·É»úÔÚ±ß½çÄÚ
+    // ç¡®ä¿é£æœºåœ¨è¾¹ç•Œå†…
     if (px >= 0 && px < H && py >= 2 && py < W - 2) {
-        // »æÖÆ·É»úÍ¼ĞÎ
+        // ç»˜åˆ¶é£æœºå›¾å½¢
         map[px][py] = 'A';
         map[px][py - 1] = '<';
         map[px][py + 1] = '>';
         map[px - 1][py] = '^';
         
-        // »æÖÆ»úÒí×°ÊÎ
+        // ç»˜åˆ¶æœºç¿¼è£…é¥°
         if (py > 1 && py < W - 2) {
             map[px - 1][py - 2] = shot_level >= 2 ? '=' : ' ';
             map[px - 1][py + 2] = shot_level >= 2 ? '=' : ' ';
@@ -98,7 +98,7 @@ void drawPlayer() {
     }
 }
 
-// »æÖÆ×Óµ¯
+// ç»˜åˆ¶å­å¼¹
 void drawBullet() {
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
@@ -106,7 +106,7 @@ void drawBullet() {
             int by = bullets[i].y;
             
             if (bx >= 1 && bx < H - 1 && by >= 1 && by < W - 1) {
-                // »æÖÆ²»Í¬¿í¶ÈµÄ×Óµ¯
+                // ç»˜åˆ¶ä¸åŒå®½åº¦çš„å­å¼¹
                 for (int w = 0; w < shot_width; w++) {
                     int offset = w - shot_width / 2;
                     if (by + offset >= 1 && by + offset < W - 1) {
@@ -118,43 +118,43 @@ void drawBullet() {
     }
 }
 
-// »æÖÆµĞÈË
+// ç»˜åˆ¶æ•Œäºº
 void drawEnemy() {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (enemies[i].active) {
             int ex = enemies[i].x;
             int ey = enemies[i].y;
             if (ex >= 1 && ex < H - 1 && ey >= 1 && ey < W - 1) {
-                // »æÖÆµĞ»ú
+                // ç»˜åˆ¶æ•Œæœº
                 map[ex][ey] = '@';
                 map[ex + 1][ey - 1] = '/';
                 map[ex + 1][ey + 1] = '\\';
                 map[ex + 1][ey] = 'V';
                 
-                // ¸ù¾İËÙ¶È»æÖÆ²»Í¬ÑÕÉ«µÄµĞ»ú
+                // æ ¹æ®é€Ÿåº¦ç»˜åˆ¶ä¸åŒé¢œè‰²çš„æ•Œæœº
                 if (enemies[i].speed > 3) {
-                    map[ex][ey] = 'X'; // ¿ìËÙµĞ»ú
+                    map[ex][ey] = 'X'; // å¿«é€Ÿæ•Œæœº
                 } else if (enemies[i].speed > 2) {
-                    map[ex][ey] = '#'; // ÖĞËÙµĞ»ú
+                    map[ex][ey] = '#'; // ä¸­é€Ÿæ•Œæœº
                 }
             }
         }
     }
 }
 
-// äÖÈ¾ÓÎÏ·»­Ãæ
+// æ¸²æŸ“æ¸¸æˆç”»é¢
 void show() {
-    clearMap();         // Çå¿Õ»­Ãæ
-    drawPlayer();       // »æÖÆÍæ¼Ò
-    drawBullet();       // »æÖÆ×Óµ¯
-    drawEnemy();        // »æÖÆµĞÈË
+    clearMap();         // æ¸…ç©ºç”»é¢
+    drawPlayer();       // ç»˜åˆ¶ç©å®¶
+    drawBullet();       // ç»˜åˆ¶å­å¼¹
+    drawEnemy();        // ç»˜åˆ¶æ•Œäºº
     
-    // ÏÔÊ¾ÓÎÏ·ĞÅÏ¢
+    // æ˜¾ç¤ºæ¸¸æˆä¿¡æ¯
     gotoxy(0, H);
     printf("Score: %04d   Lives: %d   Shot: %d   Enemy Speed: %d", 
            score, lives, shot_width, enemy_base_speed);
     
-    // »æÖÆ×´Ì¬Ìõ
+    // ç»˜åˆ¶çŠ¶æ€æ¡
     gotoxy(0, H + 1);
     printf("[");
     int barWidth = 20;
@@ -165,7 +165,7 @@ void show() {
     }
     printf("]");
     
-    // ´òÓ¡Õû¸ö»­Ãæ
+    // æ‰“å°æ•´ä¸ªç”»é¢
     gotoxy(0, 0);
     for (int i = 0; i < H; i++) {
         for (int j = 0; j < W; j++) {
@@ -175,15 +175,15 @@ void show() {
     }
 }
 
-// Éú³ÉĞÂµĞ»ú
+// ç”Ÿæˆæ–°æ•Œæœº
 void spawnEnemy() {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (!enemies[i].active) {
-            enemies[i].x = 1; // ´Ó¶¥²¿Éú³É
-            enemies[i].y = rand() % (W - 4) + 2; // È·±£µĞ»ú²»»áÔÚ±ß½çÉÏ
+            enemies[i].x = 1; // ä»é¡¶éƒ¨ç”Ÿæˆ
+            enemies[i].y = rand() % (W - 4) + 2; // ç¡®ä¿æ•Œæœºä¸ä¼šåœ¨è¾¹ç•Œä¸Š
             enemies[i].active = 1;
             
-            // ¸ù¾İ·ÖÊıÉèÖÃµĞ»úËÙ¶È£¨»ù´¡ËÙ¶È + Ëæ»úÆ«ÒÆ£©
+            // æ ¹æ®åˆ†æ•°è®¾ç½®æ•Œæœºé€Ÿåº¦ï¼ˆåŸºç¡€é€Ÿåº¦ + éšæœºåç§»ï¼‰
             enemies[i].speed = enemy_base_speed + rand() % (1 + score / 200);
             if (enemies[i].speed > 6) enemies[i].speed = 6;
             
@@ -192,11 +192,11 @@ void spawnEnemy() {
     }
 }
 
-// ·¢ÉäÉ¢µ¯
+// å‘å°„æ•£å¼¹
 void fireShotgun() {
     int bullets_fired = 0;
     
-    // ÖĞ¼ä×Óµ¯
+    // ä¸­é—´å­å¼¹
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) {
             bullets[i].x = px - 1;
@@ -207,7 +207,7 @@ void fireShotgun() {
         }
     }
     
-    // ×ó±ß×Óµ¯
+    // å·¦è¾¹å­å¼¹
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) {
             bullets[i].x = px - 1;
@@ -218,7 +218,7 @@ void fireShotgun() {
         }
     }
     
-    // ÓÒ±ß×Óµ¯
+    // å³è¾¹å­å¼¹
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) {
             bullets[i].x = px - 1;
@@ -229,7 +229,7 @@ void fireShotgun() {
         }
     }
     
-    // Èç¹û·ÖÊı×ã¹»¸ß£¬·¢Éä¶îÍâµÄÁ½·¢×Óµ¯
+    // å¦‚æœåˆ†æ•°è¶³å¤Ÿé«˜ï¼Œå‘å°„é¢å¤–çš„ä¸¤å‘å­å¼¹
     if (shot_level >= 2) {
         for (int i = 0; i < MAX_BULLETS; i++) {
             if (!bullets[i].active) {
@@ -253,22 +253,22 @@ void fireShotgun() {
     }
 }
 
-// ¸üĞÂÓÎÏ·×´Ì¬£¨ÎŞÊäÈë£©
+// æ›´æ–°æ¸¸æˆçŠ¶æ€ï¼ˆæ— è¾“å…¥ï¼‰
 void updatenoinput() {
-    // ÒÆ¶¯ËùÓĞ¼¤»îµÄ×Óµ¯
+    // ç§»åŠ¨æ‰€æœ‰æ¿€æ´»çš„å­å¼¹
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
-            bullets[i].x -= 1; // ×Óµ¯ËÙ¶È¹Ì¶¨Îª1
+            bullets[i].x -= 1; // å­å¼¹é€Ÿåº¦å›ºå®šä¸º1
             
-            // Èç¹û×Óµ¯ÒÆ³öÆÁÄ»ÉÏ·½£¬½«ÆäÉèÎªÎ´¼¤»î
+            // å¦‚æœå­å¼¹ç§»å‡ºå±å¹•ä¸Šæ–¹ï¼Œå°†å…¶è®¾ä¸ºæœªæ¿€æ´»
             if (bullets[i].x <= 0) {
                 bullets[i].active = 0;
             }
             
-            // ¼ì²â×Óµ¯»÷ÖĞµĞÈË
+            // æ£€æµ‹å­å¼¹å‡»ä¸­æ•Œäºº
             for (int j = 0; j < MAX_ENEMIES; j++) {
                 if (bullets[i].active && enemies[j].active) {
-                    // ¼ì²â¿í×Óµ¯µÄÅö×²
+                    // æ£€æµ‹å®½å­å¼¹çš„ç¢°æ’
                     int hit = 0;
                     for (int w = 0; w < shot_width; w++) {
                         int offset = w - shot_width / 2;
@@ -281,10 +281,10 @@ void updatenoinput() {
                     
                     if (hit) {
                         score += 10;
-                        bullets[i].active = 0; // ½ûÓÃÕâ¿Å×Óµ¯
-                        enemies[j].active = 0;  // ½ûÓÃµĞ»ú
+                        bullets[i].active = 0; // ç¦ç”¨è¿™é¢—å­å¼¹
+                        enemies[j].active = 0;  // ç¦ç”¨æ•Œæœº
                         
-                        // ¸üĞÂ×Óµ¯¿í¶ÈºÍµÈ¼¶
+                        // æ›´æ–°å­å¼¹å®½åº¦å’Œç­‰çº§
                         if (score >= 100 && shot_level == 0) {
                             shot_width = 3;
                             shot_level = 1;
@@ -293,7 +293,7 @@ void updatenoinput() {
                             shot_level = 2;
                         }
                         
-                        // Ôö¼ÓµĞ»ú»ù´¡ËÙ¶È
+                        // å¢åŠ æ•ŒæœºåŸºç¡€é€Ÿåº¦
                         enemy_base_speed = 1 + score / 100;
                         if (enemy_base_speed > 5) enemy_base_speed = 5;
                         
@@ -304,10 +304,10 @@ void updatenoinput() {
         }
     }
     
-    // µĞ»úÒÆ¶¯ºÍÅö×²¼ì²â
+    // æ•Œæœºç§»åŠ¨å’Œç¢°æ’æ£€æµ‹
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (enemies[i].active) {
-            // µĞ»úÒÆ¶¯£¨ËÙ¶ÈÔ½¿ìÒÆ¶¯ÆµÂÊÔ½¸ß£©
+            // æ•Œæœºç§»åŠ¨ï¼ˆé€Ÿåº¦è¶Šå¿«ç§»åŠ¨é¢‘ç‡è¶Šé«˜ï¼‰
             static int ve = 0;
             ve++;
             if (ve >= 10 / enemies[i].speed) {
@@ -315,31 +315,31 @@ void updatenoinput() {
                 ve = 0;
             }
             
-            // ¼ì²âµĞ»ú³¬³ö±ß½ç
+            // æ£€æµ‹æ•Œæœºè¶…å‡ºè¾¹ç•Œ
             if (enemies[i].x >= H - 1) {
-                enemies[i].active = 0;  // ½ûÓÃµĞ»ú
-                lives--; // Íæ¼ÒÊ§È¥Ò»ÌõÉúÃü
+                enemies[i].active = 0;  // ç¦ç”¨æ•Œæœº
+                lives--; // ç©å®¶å¤±å»ä¸€æ¡ç”Ÿå‘½
                 if (lives <= 0) {
                     over = 1;
                 }
             }
             
-            // ¼ì²âÍæ¼ÒÓëµĞÈËÅö×²
+            // æ£€æµ‹ç©å®¶ä¸æ•Œäººç¢°æ’
             if (enemies[i].active) {
                 int collision = 0;
-                // ¼ì²âÍæ¼Ò·É»ú¸÷¸ö²¿·Ö
+                // æ£€æµ‹ç©å®¶é£æœºå„ä¸ªéƒ¨åˆ†
                 if (enemies[i].x == px && enemies[i].y == py) collision = 1;
                 if (enemies[i].x == px && enemies[i].y == py - 1) collision = 1;
                 if (enemies[i].x == px && enemies[i].y == py + 1) collision = 1;
                 if (enemies[i].x == px - 1 && enemies[i].y == py) collision = 1;
                 
                 if (collision) {
-                    enemies[i].active = 0; // ½ûÓÃµĞ»ú
+                    enemies[i].active = 0; // ç¦ç”¨æ•Œæœº
                     lives--;
                     if (lives <= 0) {
                         over = 1;
                     } else {
-                        // ±»»÷ÖĞºóÔİÊ±Ê§È¥Ç¿»¯
+                        // è¢«å‡»ä¸­åæš‚æ—¶å¤±å»å¼ºåŒ–
                         shot_width = 1;
                         shot_level = 0;
                     }
@@ -348,7 +348,7 @@ void updatenoinput() {
         }
     }
     
-    // Éú³ÉĞÂµĞ»ú
+    // ç”Ÿæˆæ–°æ•Œæœº
     spawn_timer++;
     if (spawn_timer >= ENEMY_SPAWN_RATE) {
         spawnEnemy();
@@ -365,11 +365,11 @@ void updateinput() {
             case 's': if (px < H - 2) px++; break;
             case 'w': if (px > 1) px--; break;
             case ' ': 
-                // ¸ù¾İ×Óµ¯µÈ¼¶¾ö¶¨·¢Éä·½Ê½
+                // æ ¹æ®å­å¼¹ç­‰çº§å†³å®šå‘å°„æ–¹å¼
                 if (shot_level >= 1) {
-                    fireShotgun(); // É¢µ¯Ä£Ê½
+                    fireShotgun(); // æ•£å¼¹æ¨¡å¼
                 } else {
-                    // µ¥·¢×Óµ¯
+                    // å•å‘å­å¼¹
                     for (int i = 0; i < MAX_BULLETS; i++) {
                         if (!bullets[i].active) {
                             bullets[i].x = px - 1;
@@ -380,7 +380,7 @@ void updateinput() {
                     }
                 }
                 break;
-            case 27: over = 1; break;  // ESCÍË³ö
+            case 27: over = 1; break;  // ESCé€€å‡º
         }
     }
 }
@@ -408,7 +408,7 @@ int main() {
         show();
         updatenoinput();
         updateinput();
-        Sleep(50); // ¿ØÖÆÓÎÏ·ËÙ¶È
+        Sleep(50); // æ§åˆ¶æ¸¸æˆé€Ÿåº¦
     }
     gameOverScreen();
     return 0;

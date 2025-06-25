@@ -106,3 +106,9 @@ void gotoxy(int x,int y)//eliminating flashing
 	pos.Y=y;
 	SetConsoleCursorPosition(handle,pos);
 }
+//end the game if esc pressed
+if(input==27)
+{
+	printf("Game over\n");
+	exit(0);
+}
